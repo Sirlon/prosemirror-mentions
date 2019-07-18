@@ -181,6 +181,7 @@ export function getMentionsPlugin(opts) {
     // TODO: think about outsourcing this positioning logic as options
     document.body.appendChild(el);
     el.style.position = "fixed";
+    el.style.zIndex = 100000;
     el.style.left = offset.left + "px";
 
     var top = textDOM.offsetHeight + offset.top;

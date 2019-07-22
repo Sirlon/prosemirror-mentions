@@ -13,8 +13,10 @@ function getRegexp(mentionTrigger, hashtagTrigger, allowSpace) {
     ? new RegExp("(^|\\s)" + mentionTrigger + "([\\w-\\+]+\\s?[\\w-\\+]*)$")
     : new RegExp("(^|\\s)" + mentionTrigger + "([\\w-\\+]+)$");
 
-  // hashtags should never allow spaces. I mean, what's the point of allowing spaces in hashtags?
-  var tag = new RegExp("(^|\\s)" + hashtagTrigger + "([\\w-]+)$");
+  // hashtags should never allow spaces. I mean, what's the point of allowing spaces in hashtags? <- Some tagged slide with a name -..-
+  var tag = allowSpace
+    ? new RegExp("(^|\\s)" + hashtagTrigger + "([\\w-\\+]*\\s?[\\w-\\+]*)$")
+    : new RegExp("(^|\\s)" + hashtagTrigger + "([\\w-]*)$");
 
   return {
     mention: mention,
@@ -192,13 +194,13 @@ function getMentionsPlugin(opts) {
   var removeClassAtIndex = function(index, className) {
     var itemList = el.querySelector(".suggestion-item-list").childNodes;
     var prevItem = itemList[index];
-    prevItem.classList.remove(className);
+    prevItem && prevItem.classList.remove(className);
   };
 
   var addClassAtIndex = function(index, className) {
     var itemList = el.querySelector(".suggestion-item-list").childNodes;
     var prevItem = itemList[index];
-    prevItem.classList.add(className);
+    prevItem && prevItem.classList.add(className);
   };
 
   var setIndex = function(index, state, opts) {

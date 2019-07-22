@@ -224,19 +224,7 @@ function getMentionsPlugin(opts) {
 
   var select = function(view, state, opts) {
     var item = state.suggestions[state.index];
-    var attrs;
-    if (state.type === "mention") {
-      attrs = {
-        name: item.name,
-        id: item.id,
-        email: item.email
-      };
-    } else {
-      attrs = {
-        tag: item.tag
-      };
-    }
-    var node = view.state.schema.nodes[state.type].create(attrs);
+    var node = view.state.schema.nodes[state.type].create(item);
     var tr = view.state.tr.replaceWith(state.range.from, state.range.to, node);
 
     var newState = view.state.apply(tr);

@@ -331,7 +331,7 @@ export function getMentionsPlugin(opts) {
       return {
         update: view => {
           var state = this.key.getState(view.state);
-          if (!state.text) {
+          if (!state.active) {
             hideList();
             clearTimeout(showListTimeoutId);
             return;

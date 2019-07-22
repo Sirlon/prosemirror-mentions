@@ -13,8 +13,10 @@ export function getRegexp(mentionTrigger, hashtagTrigger, allowSpace) {
     ? new RegExp("(^|\\s)" + mentionTrigger + "([\\w-\\+]+\\s?[\\w-\\+]*)$")
     : new RegExp("(^|\\s)" + mentionTrigger + "([\\w-\\+]+)$");
 
-  // hashtags should never allow spaces. I mean, what's the point of allowing spaces in hashtags?
-  var tag = new RegExp("(^|\\s)" + hashtagTrigger + "([\\w-]+)$");
+  // hashtags should never allow spaces. I mean, what's the point of allowing spaces in hashtags? <- Some tagged slide with a name -..-
+  var tag = allowSpace
+    ? new RegExp("(^|\\s)" + hashtagTrigger + "([\\w-\\+]*\\s?[\\w-\\+]*)$")
+    : new RegExp("(^|\\s)" + hashtagTrigger + "([\\w-]*)$");
 
   return {
     mention: mention,

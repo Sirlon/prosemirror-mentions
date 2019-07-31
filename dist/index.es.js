@@ -178,11 +178,11 @@ function getMentionsPlugin(opts) {
 
     // TODO: think about outsourcing this positioning logic as options
     document.body.appendChild(el);
-    el.style.position = "fixed";
+    el.style.position = "absolute";
     el.style.zIndex = 100000;
-    el.style.left = offset.left + "px";
+    el.style.left = offset.left + window.pageXOffset + "px";
 
-    var top = textDOM.offsetHeight + offset.top;
+    var top = textDOM.offsetHeight + offset.top + window.pageYOffset;
     el.style.top = top + "px";
     el.style.display = "block";
   };

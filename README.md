@@ -166,3 +166,5 @@ Use Github Issues to file requests and bugs.
 ## License
 
 MIT License
+
+-------

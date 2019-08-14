@@ -38,7 +38,7 @@ function getMatch($position, opts) {
   // take current para text content upto cursor start.
   // this makes the regex simpler and parsing the matches easier.
   var parastart = $position.before();
-  const text = $position.doc.textBetween(parastart, $position.pos, "\n", "\0");
+  var text = $position.doc.textBetween(parastart, $position.pos, "\n", "\0");
 
   var regex = getRegexp(
     opts.mentionTrigger,
@@ -87,7 +87,7 @@ function getMatch($position, opts) {
  * Util to debounce call to a function.
  * >>> debounce(function(){}, 1000, this)
  */
-const debounce = (function() {
+var debounce = (function() {
   var timeoutId = null;
   return function(func, timeout, context) {
     context = context || this;
@@ -100,7 +100,7 @@ const debounce = (function() {
   };
 })();
 
-var getNewState = function() {
+var getNewState = function getNewState() {
   return {
     active: false,
     range: {
@@ -124,15 +124,20 @@ function getMentionsPlugin(opts) {
     mentionTrigger: "@",
     hashtagTrigger: "#",
     allowSpace: true,
-    getSuggestions: (type, text, cb) => {
+    getSuggestions: function getSuggestions(type, text, cb) {
       cb([]);
     },
-    getSuggestionsHTML: items =>
-      '<div class="suggestion-item-list">' +
-      items
-        .map(i => '<div class="suggestion-item">' + i.name + "</div>")
-        .join("") +
-      "</div>",
+    getSuggestionsHTML: function getSuggestionsHTML(items) {
+      return (
+        '<div class="suggestion-item-list">' +
+        items
+          .map(function(i) {
+            return '<div class="suggestion-item">' + i.name + "</div>";
+          })
+          .join("") +
+        "</div>"
+      );
+    },
     activeClass: "suggestion-item-active",
     suggestionTextClass: "prosemirror-suggestion",
     maxNoOfSuggestions: 10,
@@ -148,7 +153,7 @@ function getMentionsPlugin(opts) {
   var el = document.createElement("div");
 
   // current Idx
-  var showList = function(view, state, suggestions, opts) {
+  var showList = function showList(view, state, suggestions, opts) {
     el.innerHTML = opts.getSuggestionsHTML(suggestions, state.type);
 
     // attach new item event handlers
@@ -191,36 +196,36 @@ function getMentionsPlugin(opts) {
     el.style.display = "block";
   };
 
-  var hideList = function() {
+  var hideList = function hideList() {
     el.style.display = "none";
   };
 
-  var removeClassAtIndex = function(index, className) {
+  var removeClassAtIndex = function removeClassAtIndex(index, className) {
     var itemList = el.querySelector(".suggestion-item-list").childNodes;
     var prevItem = itemList[index];
     prevItem && prevItem.classList.remove(className);
   };
 
-  var addClassAtIndex = function(index, className) {
+  var addClassAtIndex = function addClassAtIndex(index, className) {
     var itemList = el.querySelector(".suggestion-item-list").childNodes;
     var prevItem = itemList[index];
     prevItem && prevItem.classList.add(className);
   };
 
-  var setIndex = function(index, state, opts) {
+  var setIndex = function setIndex(index, state, opts) {
     removeClassAtIndex(state.index, opts.activeClass);
     state.index = index;
     addClassAtIndex(state.index, opts.activeClass);
   };
 
-  var goNext = function(view, state, opts) {
+  var goNext = function goNext(view, state, opts) {
     removeClassAtIndex(state.index, opts.activeClass);
     state.index++;
     state.index = state.index === state.suggestions.length ? 0 : state.index;
     addClassAtIndex(state.index, opts.activeClass);
   };
 
-  var goPrev = function(view, state, opts) {
+  var goPrev = function goPrev(view, state, opts) {
     removeClassAtIndex(state.index, opts.activeClass);
     state.index--;
     state.index =
@@ -228,7 +233,7 @@ function getMentionsPlugin(opts) {
     addClassAtIndex(state.index, opts.activeClass);
   };
 
-  var select = function(view, state, opts) {
+  var select = function select(view, state, opts) {
     var item = state.suggestions[state.index];
     var node = view.state.schema.nodes[state.type].create(item);
     var tr = view.state.tr.replaceWith(state.range.from, state.range.to, node);
@@ -246,11 +251,10 @@ function getMentionsPlugin(opts) {
 
     // we will need state to track if suggestion dropdown is currently active or not
     state: {
-      init() {
+      init: function init() {
         return getNewState();
       },
-
-      apply(tr, state) {
+      apply: function apply(tr, state) {
         // compute state.active for current transaction and return
         var newState = getNewState();
         var selection = tr.selection;
@@ -258,8 +262,8 @@ function getMentionsPlugin(opts) {
           return newState;
         }
 
-        const $position = selection.$from;
-        const match = getMatch($position, opts);
+        var $position = selection.$from;
+        var match = getMatch($position, opts);
 
         // if match found update state
         if (match) {
@@ -276,7 +280,7 @@ function getMentionsPlugin(opts) {
     // We'll need props to hi-jack keydown/keyup & enter events when suggestion dropdown
     // is active.
     props: {
-      handleKeyDown(view, e) {
+      handleKeyDown: function handleKeyDown(view, e) {
         var state = this.getState(view.state);
 
         // don't handle if no suggestions or not in active mode
@@ -312,8 +316,10 @@ function getMentionsPlugin(opts) {
       },
 
       // to decorate the currently active @mention text in ui
-      decorations(editorState) {
-        const { active, range } = this.getState(editorState);
+      decorations: function decorations(editorState) {
+        var _getState = this.getState(editorState),
+          active = _getState.active,
+          range = _getState.range;
 
         if (!active) return null;
 
@@ -327,10 +333,12 @@ function getMentionsPlugin(opts) {
     },
 
     // To track down state mutations and add dropdown reactions
-    view() {
+    view: function view() {
+      var _this = this;
+
       return {
-        update: view => {
-          var state = this.key.getState(view.state);
+        update: function update(view) {
+          var state = _this.key.getState(view.state);
           if (!state.active) {
             hideList();
             clearTimeout(showListTimeoutId);
@@ -349,7 +357,7 @@ function getMentionsPlugin(opts) {
               });
             },
             opts.delay,
-            this
+            _this
           );
         }
       };
@@ -360,7 +368,7 @@ function getMentionsPlugin(opts) {
 /**
  * See https://prosemirror.net/docs/ref/#model.NodeSpec
  */
-const mentionNode = {
+var mentionNode = {
   group: "inline",
   inline: true,
   atom: true,
@@ -374,7 +382,7 @@ const mentionNode = {
   selectable: false,
   draggable: false,
 
-  toDOM: node => {
+  toDOM: function toDOM(node) {
     return [
       "span",
       {
@@ -392,7 +400,7 @@ const mentionNode = {
       // match tag with following CSS Selector
       tag: "span[data-mention-id][data-mention-name][data-mention-email]",
 
-      getAttrs: dom => {
+      getAttrs: function getAttrs(dom) {
         var id = dom.getAttribute("data-mention-id");
         var name = dom.getAttribute("data-mention-name");
         var email = dom.getAttribute("data-mention-email");
@@ -409,7 +417,7 @@ const mentionNode = {
 /**
  * See https://prosemirror.net/docs/ref/#model.NodeSpec
  */
-const tagNode = {
+var tagNode = {
   group: "inline",
   inline: true,
   atom: true,
@@ -421,7 +429,7 @@ const tagNode = {
   selectable: false,
   draggable: false,
 
-  toDOM: node => {
+  toDOM: function toDOM(node) {
     return [
       "span",
       {
@@ -437,7 +445,7 @@ const tagNode = {
       // match tag with following CSS Selector
       tag: "span[data-tag]",
 
-      getAttrs: dom => {
+      getAttrs: function getAttrs(dom) {
         var tag = dom.getAttribute("data-tag");
         return {
           tag: tag

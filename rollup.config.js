@@ -13,7 +13,7 @@ export default {
     }
   ],
   sourcemap: true,
-  plugins: [babel({ babelrc: false })],
+  plugins: [babel()],
   external(id) {
     return !/^[\.\/]/.test(id);
   }
